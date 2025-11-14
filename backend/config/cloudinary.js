@@ -8,7 +8,7 @@ const uploadToCloudinary = async (file) => {
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-    const result = cloudinary.uploader.upload(file, {
+    const result = await cloudinary.uploader.upload(file, {
       resource_type: "auto",
     });
     fs.unlinkSync(file); //delete file after we have received it in result

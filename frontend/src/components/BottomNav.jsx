@@ -17,7 +17,7 @@ const BottomNav = () => {
       <div><FiPlusSquare className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
       <div><RxVideo className='w-7 cursor-pointer text-white h-7'/></div>
       <div className='w-10 h-10 border-2 border-black rounded-full cursor-pointer overflow-hidden' onClick={()=>navigate(`/profile/${userData.username}`)}>
-                <img className='w-full object-cover' src={dp} alt="dp" />
+                <img className='w-full object-cover' src={userData?.profilePic || dp} alt="dp" />
               </div>
     </div>
   )
