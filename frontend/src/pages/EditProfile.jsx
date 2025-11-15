@@ -41,7 +41,7 @@ const EditProfile = () => {
         const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/user/editProfile`,formData,{withCredentials:true});
         dispatch(setProfileData(res.data.user));
         dispatch(setUserData(res.data.user));
-        navigate(`/profile/${userData?.username}`)
+        navigate(`/profile/${res.data?.user?.username}`)
       } catch (error) {
         console.log(error)
       } finally{

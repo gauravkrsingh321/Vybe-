@@ -62,7 +62,11 @@ const Profile = () => {
         <div className="w-20 h-20 md:w-[140px] md:h-[140px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
           <img
             className="w-full object-cover"
-            src={userData.profilePic || dp}
+            src={
+  profileData?.user?._id === userData?._id 
+    ? (userData?.profilePic ? userData?.profilePic : dp )          // fast for your own profile change
+    : profileData?.user?.profilePic // correct when you visit others' profiles
+}
             alt="dp"
           />
         </div>
@@ -73,7 +77,7 @@ const Profile = () => {
           <div className="text-[17px] text-[#ffffffe8]">
             {profileData?.user?.profession || "New User"}
           </div>
-          <div className="text-[17px] text-[#ffffffe8]">{profileData?.bio}</div>
+          <div className="text-[17px] text-[#ffffffe8]">{profileData?.user?.bio}</div>
         </div>
       </div>
 

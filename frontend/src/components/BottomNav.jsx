@@ -12,9 +12,9 @@ const BottomNav = () => {
   const {userData} = useSelector(state=>state.user);
   return (
     <div className='w-[90%] lg:w-[40%] h-20 bg-black flex justify-around items-center fixed bottom-5 shadow-2xl shadow-[#000000] rounded-full'>
-      <div><GoHomeFill className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
+      <div  onClick={()=>navigate(`/`)}><GoHomeFill className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
       <div><FiSearch className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
-      <div><FiPlusSquare className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
+      <div onClick={()=>navigate(`/upload`)}><FiPlusSquare className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
       <div><RxVideo className='w-7 cursor-pointer text-white h-7'/></div>
       <div className='w-10 h-10 border-2 border-black rounded-full cursor-pointer overflow-hidden' onClick={()=>navigate(`/profile/${userData.username}`)}>
                 <img className='w-full object-cover' src={userData?.profilePic || dp} alt="dp" />

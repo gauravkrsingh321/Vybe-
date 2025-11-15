@@ -9,6 +9,7 @@ import { ClipLoader } from 'react-spinners';
 import useSuggestedUsers from './hooks/useSuggestedUsers';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import Upload from './pages/Upload';
 
 const App = () => {
   useCurrentUser();
@@ -26,6 +27,7 @@ const App = () => {
         <Route path='/forgot-password' element={!userData?<ForgotPassword/>:<Navigate to={'/'}/>}/>
         <Route path='/profile/:username' element={userData?<Profile/>:<Navigate to={'/login'}/>}/>
         <Route path='/editprofile' element={userData?<EditProfile/>:<Navigate to={'/login'}/>}/>
+        <Route path='/upload' element={userData?<Upload/>:<Navigate to={'/login'}/>}/>
       </Routes>
     </Router>
   );
