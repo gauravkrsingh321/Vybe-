@@ -13,6 +13,7 @@ export const uploadStory = async (req, res) => {
     let media;
     if (req.file) {
       media = await uploadToCloudinary(req.file.path);
+      media = media.secure_url;
     } else {
       return res.status(400).json({
         success: false,

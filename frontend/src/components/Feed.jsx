@@ -3,8 +3,11 @@ import logo1 from "../assets/logo2.png"
 import { FaRegHeart } from 'react-icons/fa6'
 import StoryCard from './StoryCard'
 import BottomNav from './BottomNav'
+import { useSelector } from 'react-redux'
+import Post from './Post'
 
 const Feed = () => {
+    const {postData} = useSelector(state=>state.post);
   return (
     <div className='lg:w-[50%] w-full bg-black min-h-screen lg:h-screen relative lg:overflow-y-auto'>
       <div className='flex justify-between lg:hidden w-full h-[100px] p-5 items-center'>
@@ -24,6 +27,12 @@ const Feed = () => {
 
             <div className='w-full bg-white pb-[120px] min-h-screen flex flex-col items-center gap-5 p-2.5 pt-10 rounded-t-[60px] relative'>
               <BottomNav/>
+
+            {
+              postData?.map((post)=>{
+               return <Post postData={post} key={post._id}/>
+              })
+            }  
             </div>
     </div>
   )

@@ -10,10 +10,12 @@ import useSuggestedUsers from './hooks/useSuggestedUsers';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Upload from './pages/Upload';
+import useAllPost from './hooks/useAllPost';
 
 const App = () => {
   useCurrentUser();
   useSuggestedUsers();
+  useAllPost()
   const {userData,loading} = useSelector(state=>state.user)
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><ClipLoader color='blue' size={60}/></div>

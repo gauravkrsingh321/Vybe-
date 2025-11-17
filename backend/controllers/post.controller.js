@@ -6,19 +6,24 @@ export const uploadPost = async (req,res) => {
   try {
     const {caption,mediaType} = req.body;
     let media;
+    console.log("req.file:", req.file);
+console.log("req.file.path:", req.file?.path);
+
     if(req.file) {
       media = await uploadToCloudinary(req.file.path);
+      media = media.secure_url;
     } else {
       return res.status(400).json({
         success: false,
         message: "Media is required",
       });
     }
-    const post = await User.create({caption,media,mediaType,author:req.userId});
+    
+    const post = await Post.create({caption,media,mediaType,author:req.userId});
     const user = await User.findById(req.userId);
     user.posts.push(post._id)
     await user.save()
-    const populatedPost = await User.findById(post._id).populate("author","name username profilePic");
+    const populatedPost = await Post.findById(post._id).populate("author","name username profilePic");
     return res.status(200).json({
       success: true,
       populatedPost,
@@ -33,7 +38,7 @@ export const uploadPost = async (req,res) => {
 
 export const getAllPosts = async (req,res) => {
   try {
-    const allPosts = await Post.find({}).populate("author","name username profilePic");
+    const allPosts = await Post.find({}).populate("author","name username profilePic").sort({createdAt:-1});
     return res.status(200).json({
       success: true,
       allPosts,
