@@ -11,7 +11,7 @@ const BottomNav = () => {
   const navigate = useNavigate();
   const {userData} = useSelector(state=>state.user);
   return (
-    <div className='w-[90%] lg:w-[40%] h-20 bg-black flex justify-around items-center fixed bottom-5 shadow-2xl shadow-[#000000] rounded-full'>
+    <div className='w-[90%] lg:w-[40%] z-100 h-20 bg-black flex justify-around items-center fixed bottom-5 shadow-2xl shadow-[#000000] rounded-full'>
       <div  onClick={()=>navigate(`/`)}><GoHomeFill className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
       <div><FiSearch className='w-[25px] cursor-pointer text-white h-[25px]'/></div>
       <div onClick={()=>navigate(`/upload`)}><FiPlusSquare className='w-[25px] cursor-pointer text-white h-[25px]'/></div>

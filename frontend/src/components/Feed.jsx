@@ -25,12 +25,12 @@ const Feed = () => {
               <StoryCard username={"adnjkefj"}/>
             </div>
 
-            <div className='w-full bg-white pb-[120px] min-h-screen flex flex-col items-center gap-5 p-2.5 pt-10 rounded-t-[60px] relative'>
+            <div className='w-full bg-white pb-[120px] min-h-screen flex flex-col items-center gap-10 p-2.5 pt-10 rounded-t-[60px] relative'>
               <BottomNav/>
 
             {
               postData?.map((post)=>{
-               return <Post postData={post} key={post._id}/>
+               return <Post post={post} key={post._id}/>
               })
             }  
             </div>
