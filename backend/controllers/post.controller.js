@@ -1,15 +1,15 @@
 import uploadToCloudinary from "../config/cloudinary.js";
 import { User } from "../models/user.model.js";
-import Post from "../models/post.model.js"
+import Post from "../models/post.model.js";
 
-export const uploadPost = async (req,res) => {
+export const uploadPost = async (req, res) => {
   try {
-    const {caption,mediaType} = req.body;
+    const { caption, mediaType } = req.body;
     let media;
     console.log("req.file:", req.file);
-console.log("req.file.path:", req.file?.path);
+    console.log("req.file.path:", req.file?.path);
 
-    if(req.file) {
+    if (req.file) {
       media = await uploadToCloudinary(req.file.path);
       media = media.secure_url;
     } else {
@@ -18,12 +18,20 @@ console.log("req.file.path:", req.file?.path);
         message: "Media is required",
       });
     }
-    
-    const post = await Post.create({caption,media,mediaType,author:req.userId});
+
+    const post = await Post.create({
+      caption,
+      media,
+      mediaType,
+      author: req.userId,
+    });
     const user = await User.findById(req.userId);
-    user.posts.push(post._id)
-    await user.save()
-    const populatedPost = await Post.findById(post._id).populate("author","name username profilePic");
+    user.posts.push(post._id);
+    await user.save();
+    const populatedPost = await Post.findById(post._id).populate(
+      "author",
+      "name username profilePic"
+    );
     return res.status(200).json({
       success: true,
       populatedPost,
@@ -34,11 +42,14 @@ console.log("req.file.path:", req.file?.path);
       message: error.message,
     });
   }
-}
+};
 
-export const getAllPosts = async (req,res) => {
+export const getAllPosts = async (req, res) => {
   try {
-    const allPosts = await Post.find({}).populate("author","name username profilePic").sort({createdAt:-1});
+    const allPosts = await Post.find({})
+      .populate("author", "name username profilePic")
+      .populate("comments.author", "name username profilePic")
+      .sort({ createdAt: -1 });
     return res.status(200).json({
       success: true,
       allPosts,
@@ -49,89 +60,94 @@ export const getAllPosts = async (req,res) => {
       message: error.message,
     });
   }
-}
+};
 
-export const likePost = async (req,res) => {
+export const likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const post = await Post.findById(postId);
-    if(!post) {
+    if (!post) {
       return res.status(400).json({
-      success: false,
-      message:"Post not found",
-    });
+        success: false,
+        message: "Post not found",
+      });
     }
 
-    const alreadyLiked = post.likes.some(id=>id.toString()===req.userId.toString());
+    const alreadyLiked = post.likes.some(
+      (id) => id.toString() === req.userId.toString()
+    );
 
-    if(alreadyLiked) {
-      post.likes = post.likes.filter(id=>id.toString()!==req.userId.toString());
-    }  
-    else {
+    if (alreadyLiked) {
+      post.likes = post.likes.filter(
+        (id) => id.toString() !== req.userId.toString()
+      );
+    } else {
       post.likes.push(req.userId);
     }
     await post.save();
-    post.populate("author","name username profilePic");
+    await post.populate("author", "name username profilePic");
     return res.status(200).json({
       success: true,
       post,
     });
   } catch (error) {
-     return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-}
-
-export const commentOnPost = async (req,res) => {
-  try {
-    const {message} = req.body;
-    const postId = req.params.postId;
-    const post =  await Post.findById(postId);
-     if(!post) {
-      return res.status(400).json({
-      success: false,
-      message:"Post not found",
-    });
-    }
-    post.comments.push({
-      author:req.userId,
-      message
-    })
-    await post.save();
-    post.populate("author","name username profilePic");
-    post.populate("comments.author");
-    return res.status(200).json({
-      success: true,
-      post,
-    });
-  }
-  catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};
 
-export const savePost = async (req,res)=>{
-   try {
+export const commentOnPost = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const postId = req.params.postId;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(400).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+    post.comments.push({
+      author: req.userId,
+      message,
+    });
+    await post.save();
+    await post.populate("author", "name username profilePic");
+    await post.populate("comments.author");
+    return res.status(200).json({
+      success: true,
+      post,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const savePost = async (req, res) => {
+  try {
     const postId = req.params.postId;
     const user = await User.findById(req.userId);
-    if(!user) {
+    if (!user) {
       return res.status(400).json({
-      success: false,
-      message:"User not found",
-    });
+        success: false,
+        message: "User not found",
+      });
     }
 
-    const alreadySaved = user.saved.some(id=>id.toString()===postId.toString());
+    const alreadySaved = user.saved.some(
+      (id) => id.toString() === postId.toString()
+    );
 
-    if(alreadySaved) {
-      user.saved = user.saved.filter(id=>id.toString()!==postId.toString());
-    }  
-    else {
+    if (alreadySaved) {
+      user.saved = user.saved.filter(
+        (id) => id.toString() !== postId.toString()
+      );
+    } else {
       user.saved.push(postId);
     }
     await user.save();
@@ -141,9 +157,9 @@ export const savePost = async (req,res)=>{
       user,
     });
   } catch (error) {
-     return res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
-}
+};

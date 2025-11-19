@@ -11,6 +11,6 @@ router.post("/uploadPost",isAuth,upload.single("media"),uploadPost);
 router.get("/allPosts",isAuth,getAllPosts);
 router.get("/like/:postId",isAuth,likePost);
 router.get("/saved/:postId",isAuth,savePost);
-router.post("/postComment",isAuth,commentOnPost)
+router.post("/postComment/:postId",isAuth,commentOnPost)
 
 export default router
