@@ -6,7 +6,7 @@ export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.userId;
     const user = await User.findById(userId).populate("posts reels");
-    if(!user) {
+    if (!user) {
       return res.status(400).json({
         success: false,
         message: "User not found",
@@ -80,7 +80,7 @@ export const editProfile = async (req, res) => {
 
     user.name = name;
     user.username = username;
-     // only update if new image selected
+    // only update if new image selected
     if (profilePic) {
       user.profilePic = profilePic.secure_url;
     }
@@ -116,6 +116,57 @@ export const getProfile = async (req, res) => {
       success: true,
       user,
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const follow = async (req, res) => {
+  try {
+    const currentUserId = req.userId;
+    const targetUserId = req.params.targetUserId;
+    if (!targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "Target User not found",
+      });
+    }
+    if (currentUserId === targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "You can not follow yourself",
+      });
+    }
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+    const isFollowing = currentUser.following.includes(targetUserId);
+
+    if (isFollowing) {
+      currentUser.following = currentUser.following.filter(
+        (id) => id.toString() !== targetUserId
+      );
+      targetUser.followers = targetUser.followers.filter(
+        (id) => id.toString() !== currentUserId
+      );
+      await currentUser.save();
+      await targetUser.save();
+      return res.status(200).json({
+        success: true,
+        message: "Unfollowed Successfully",
+      });
+    } else {
+      currentUser.following.push(targetUserId);
+      targetUser.following.push(currentUserId);
+      await currentUser.save();
+      await targetUser.save();
+      return res.status(200).json({
+        success: true,
+        message: "Followed Successfully",
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       success: false,

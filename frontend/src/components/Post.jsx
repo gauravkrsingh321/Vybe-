@@ -7,6 +7,7 @@ import { MdOutlineBookmarkBorder, MdOutlineComment } from "react-icons/md";
 import { IoSendSharp } from "react-icons/io5";
 import axios from "axios";
 import { setPostData } from "../redux/postSlice";
+import {setUserData} from "../redux/userSlice"
 
 const Post = ({ post }) => {
   const { userData } = useSelector((state) => state.user);
@@ -43,6 +44,18 @@ const Post = ({ post }) => {
         p._id === post._id ? updatedPost : p
       );
       dispatch(setPostData(updatedPosts));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+   const handleSaved = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/post/saved/${post._id}`,
+        { withCredentials: true }
+      );
+      dispatch(setUserData(res.data.user));
     } catch (error) {
       console.log(error);
     }
@@ -108,13 +121,17 @@ const Post = ({ post }) => {
             </span>
           </div>
         </div>
-        <div>
-          {userData.saved.includes(post?._id) ? (
-            <GoBookmarkFill className="w-[25px] h-[25px] cursor-pointer" />
-          ) : (
-            <MdOutlineBookmarkBorder className="w-[25px] h-[25px] cursor-pointer" />
-          )}
-        </div>
+        <button
+  className="cursor-pointer p-2 rounded-full active:scale-90 no-select"
+  onClick={handleSaved}
+>
+  {userData?.saved?.includes(post?._id) ? (
+    <GoBookmarkFill className="w-[25px] h-[25px]" />
+  ) : (
+    <MdOutlineBookmarkBorder className="w-[25px] h-[25px]" />
+  )}
+</button>
+
       </div>
 
       {post?.caption && (

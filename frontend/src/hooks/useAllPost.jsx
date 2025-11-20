@@ -1,10 +1,11 @@
 import axios from 'axios'
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setPostData } from '../redux/postSlice.js'
 
 function useAllPost() {
   const dispatch = useDispatch()
+  const {userData} = useSelector(state=>state.user)
   useEffect(()=>{
     const fetchPosts = async()=>{
       try {
@@ -15,7 +16,7 @@ function useAllPost() {
       }
     }
     fetchPosts();
-  },[dispatch])
+  },[dispatch,userData])
 }
 
 export default useAllPost
