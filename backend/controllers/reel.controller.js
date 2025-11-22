@@ -4,7 +4,13 @@ import { User } from "../models/user.model.js";
 
 export const uploadReel = async (req,res) => {
   try {
-    const {caption} = req.body;
+    const { caption, mediaType } = req.body;
+    if (!mediaType) {
+      return res.status(400).json({
+        success: false,
+        message: "mediaType is required",
+      });
+    }
     let media;
     if(req.file) {
       media = await uploadToCloudinary(req.file.path);
@@ -15,7 +21,7 @@ export const uploadReel = async (req,res) => {
         message: "Media is required",
       });
     }
-    const reel = await Reel.create({caption,media,author:req.userId});
+    const reel = await Reel.create({caption,media,mediaType,author:req.userId});
     const user = await User.findById(req.userId);
     user.reels.push(reel._id)
     await user.save()
@@ -49,8 +55,8 @@ export const getAllReels = async (req,res) => {
 
 export const likeReel = async (req,res) => {
   try {
-    const reeId = req.params.reeId;
-    const reel = await Reel.findById(reeId);
+    const reelId = req.params.reelId;
+    const reel = await Reel.findById(reelId);
     if(!reel) {
       return res.status(400).json({
       success: false,

@@ -5,7 +5,7 @@ import uploadToCloudinary from "../config/cloudinary.js";
 export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).populate("posts reels");
+    const user = await User.findById(userId).populate("posts reels posts.author posts.comments");
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -104,7 +104,7 @@ export const editProfile = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     const username = req.params.username;
-    const user = await User.findOne({ username }).select("-password");
+    const user = await User.findOne({ username }).select("-password").populate("posts reels followers following");
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -155,11 +155,12 @@ export const follow = async (req, res) => {
       await targetUser.save();
       return res.status(200).json({
         success: true,
+        following: false,
         message: "Unfollowed Successfully",
       });
     } else {
       currentUser.following.push(targetUserId);
-      targetUser.following.push(currentUserId);
+      targetUser.followers.push(currentUserId);
       await currentUser.save();
       await targetUser.save();
       return res.status(200).json({

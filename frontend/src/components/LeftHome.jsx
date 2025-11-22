@@ -6,6 +6,7 @@ import dp from "../assets/blank_dp.png"
 import axios from 'axios'
 import { setUserData } from '../redux/userSlice'
 import OtherUser from './OtherUser'
+import { setProfileData } from "../redux/userSlice";
 import { useNavigate } from 'react-router'
 
 const LeftHome = () => {
@@ -28,7 +29,11 @@ const LeftHome = () => {
       </div>
       <div className='flex w-full justify-between px-2.5 items-center gap-2.5 border-b-2 border-b-gray-900 py-2.5'>
         <div>
-          <div className='w-[70px] h-[70px] border-2 border-black rounded-full cursor-pointer overflow-hidden' onClick={()=>navigate(`/profile/${userData.username}`)}>
+          <div className='w-[70px] h-[70px] border-2 border-black rounded-full cursor-pointer overflow-hidden' onClick={() => {
+  dispatch(setProfileData(null));
+  navigate(`/profile/${userData.username}`);
+}}
+>
           <img className='w-full object-cover' src={userData.profilePic || dp} alt="dp" />
         </div>
         {

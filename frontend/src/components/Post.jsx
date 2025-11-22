@@ -8,6 +8,7 @@ import { IoSendSharp } from "react-icons/io5";
 import axios from "axios";
 import { setPostData } from "../redux/postSlice";
 import {setUserData} from "../redux/userSlice"
+import FollowButton from "./FollowButton";
 
 const Post = ({ post }) => {
   const { userData } = useSelector((state) => state.user);
@@ -76,9 +77,9 @@ const Post = ({ post }) => {
             {post.author?.username}
           </div>
         </div>
-        <button className="px-2.5 w-[60px] md:w-[100px] py-[5px] h-[30px] md:h-10 bg-black text-white rounded-2xl text-[14px] md:text-[16px]">
-          Follow
-        </button>
+        {
+          userData._id !== post.author?._id && <FollowButton tailwind={"px-2.5 w-[60px] md:w-[100px] py-[5px] h-[30px] md:h-10 bg-black text-white rounded-2xl text-[14px] md:text-[16px] cursor-pointer"} targetUserId={post.author?._id}/>
+        }
       </div>
 
       <div className="w-[90%] min-h-[400px] md:mt-4  flex items-start flex-col md:items-center justify-center">

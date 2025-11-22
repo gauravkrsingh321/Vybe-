@@ -1,10 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   userData:null,
    loading: true, // ✅ start true until auth check completes
    suggestedUsers: null,
-   profileData:null
+   profileData:null,
+   following:[]
 }
 
 export const userSlice = createSlice({
@@ -20,10 +21,22 @@ export const userSlice = createSlice({
     },
     setProfileData: (state,action) => {
       state.profileData = action.payload
+    },
+    setFollowing: (state,action) => {
+      state.following = action.payload;
+    },
+    toggoleFollow: (state,action) => {
+      const targetUserId = action.payload;
+      if(state.following.includes(targetUserId)) {
+        state.following = state.following.filter(id=>id!==targetUserId);
+      }
+      else {
+        state.following.push(targetUserId);
+      }
     }
   },
 })
 
-export const {setUserData,setSuggestedUsers,setProfileData } = userSlice.actions
+export const {setUserData,setSuggestedUsers,setProfileData,setFollowing,toggoleFollow } = userSlice.actions
 
 export default userSlice.reducer

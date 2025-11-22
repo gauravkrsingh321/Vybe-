@@ -75,11 +75,12 @@ const Upload = () => {
       formData.append("mediaType",mediaType);
       formData.append("media",backendMedia);
       const result = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/reel/uploadReel`,formData,{withCredentials:true});
+      console.log(result)
       dispatch(setReelData([...reelData,result.data]));
       navigate("/")
     } 
     catch (error) {
-      console.log(error)
+console.log(error.response?.data);
     } finally{
       setLoading(false)
     }
@@ -140,7 +141,7 @@ const Upload = () => {
           className="w-[80%] max-w-[500px] h-[250px] bg-[#0e1316] border-gray-800 border-2 flex flex-col items-center justify-center gap-2 mt-[15vh] rounded-2xl cursor-pointer hover:bg-[#353a3d]"
           onClick={() => mediaInput.current.click()}
         >
-          <input type="file" hidden ref={mediaInput} onChange={handleMedia} />
+          <input type="file" accept={uploadType==="reel" ?"video/*" : ""} hidden ref={mediaInput} onChange={handleMedia} />
           <FiPlusSquare className="w-[25px] cursor-pointer text-white h-[25px]" />
           <div className="text-white text-[19px] font-semibold">
             Upload {uploadType}

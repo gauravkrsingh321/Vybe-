@@ -11,11 +11,14 @@ import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Upload from './pages/Upload';
 import useAllPost from './hooks/useAllPost';
+import Reels from './pages/Reels';
+import useAllReel from './hooks/useAllReel';
 
 const App = () => {
   useCurrentUser();
   useSuggestedUsers();
   useAllPost()
+  useAllReel()
   const {userData,loading} = useSelector(state=>state.user)
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><ClipLoader color='blue' size={60}/></div>
@@ -30,6 +33,7 @@ const App = () => {
         <Route path='/profile/:username' element={userData?<Profile/>:<Navigate to={'/login'}/>}/>
         <Route path='/editprofile' element={userData?<EditProfile/>:<Navigate to={'/login'}/>}/>
         <Route path='/upload' element={userData?<Upload/>:<Navigate to={'/login'}/>}/>
+        <Route path='/reels' element={userData?<Reels/>:<Navigate to={'/login'}/>}/>
       </Routes>
     </Router>
   );
