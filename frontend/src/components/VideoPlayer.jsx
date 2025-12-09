@@ -31,6 +31,27 @@ const VideoPlayer = ({ media }) => {
     }
   };
 
+  useEffect(()=>{
+      const video = videoTag.current;
+      if(!video) return;
+      const observer = new IntersectionObserver(([entry])=>{
+        if(entry.isIntersecting) {
+          video.play();
+          setIsPlaying(true);
+        }
+        else {
+          video.pause();
+          setIsPlaying(false);
+        }
+      },{threshold:0.6})
+  
+      observer.observe(video);
+  
+      return ()=>{
+        observer.unobserve(video)
+      }
+    },[])
+
   return (
     <div className="h-full  w-full relative overflow-hidden cursor-pointer max-w-full rounded-2xl">
       <video
