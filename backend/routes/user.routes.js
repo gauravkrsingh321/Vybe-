@@ -1,5 +1,4 @@
 import express from "express"
-import { login, logout, signup } from "../controllers/auth.controller.js";
 import isAuth from "../middlewares/isAuth.js";
 import { editProfile, follow, getCurrentUser, getProfile, suggestedUsers } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.js";

@@ -73,7 +73,7 @@ export const likeReel = async (req,res) => {
       reel.likes.push(req.userId);
     }
     await reel.save();
-    reel.populate("author","name username profilePic");
+    await reel.populate("author","name username profilePic");
     return res.status(200).json({
       success: true,
       reel,
@@ -102,8 +102,8 @@ export const commentOnReel = async (req,res) => {
       message
     })
     await reel.save();
-    reel.populate("author","name username profilePic");
-    reel.populate("comments.author");
+    await reel.populate("author","name username profilePic");
+    await reel.populate("comments.author");
     return res.status(200).json({
       success: true,
       reel,

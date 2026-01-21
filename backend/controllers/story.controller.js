@@ -4,7 +4,7 @@ import { User } from "../models/user.model.js";
 export const uploadStory = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-    if (user.story) {
+    if(user.story) {
       //previous story
       await Story.findByIdAndDelete(user.story);
       user.story = null;
@@ -73,7 +73,7 @@ export const getStoryByUsername = async(req,res) => {
     const username = req.params.username;
     const user = await User.findOne({username})
    if(!user) {
-        return res.status(400).json({
+        return res.status(404).json({
         success: false,
         message:"User not found",
       });
@@ -84,6 +84,37 @@ export const getStoryByUsername = async(req,res) => {
         story,
       }); 
   } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+
+//Get All Stories of all the people in current user following list
+export const getAllStories = async(req,res)=>{
+  try {
+    const currentUser = await User.findById(req.userId);
+    if(!currentUser) {
+        return res.status(404).json({
+        success: false,
+        message:"User not found",
+      });
+    }
+    const followingIds = currentUser.following;
+
+    //find stories where author id is stored in followingIds array
+    const stories = await Story.find({
+      author: {$in:followingIds}
+    }).populate("viewers author").sort({createdAt:-1});
+
+    return res.status(200).json({
+        success: true,
+        stories,
+      }); 
+  } 
+  catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
