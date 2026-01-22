@@ -31,7 +31,8 @@ const reelSchema = new mongoose.Schema({
         ref:"User"
       },
       message:{
-        type:String
+        type:String,
+        trim:true
       }
     }
   ],

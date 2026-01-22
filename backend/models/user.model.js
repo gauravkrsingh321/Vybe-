@@ -1,24 +1,85 @@
 import mongoose from "mongoose";
 
-const messageSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
-    sender: {
+    name: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    profilePic: {
+      //cloudinary image url
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
+    profession: {
+      type: String,
+    },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other", "male", "female", "other"],
+    },
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+     following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+    saved: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+    reels: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Reel",
+      },
+    ],
+    stories: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      ref: "Story",
     },
-    receiver: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+    resetOTP: {
+      type: String,
     },
-    message: {
-      type: String
+    otpExpires: {
+      type: Date,
     },
-    image: {
-      type: String
-    }
+    isOTPVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
 
-  { timestamps: true },
+  { timestamps: true }
 );
 
-export const Message = mongoose.model("Message", messageSchema);
+export const User = mongoose.model("User", userSchema);
