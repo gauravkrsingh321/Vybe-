@@ -8,6 +8,6 @@ const router = express.Router();
 router.post("/uploadReel",isAuth,upload.single("media"),uploadReel);
 router.get("/allReels",isAuth,getAllReels);
 router.get("/like/:reelId",isAuth,likeReel);
-router.post("/reelComment",isAuth,commentOnReel)
+router.post("/comment/:reelId",isAuth,commentOnReel)
 
 export default router
