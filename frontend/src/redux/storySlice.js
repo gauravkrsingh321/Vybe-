@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   storyData:[],
+  storyList:[]
 }
 
 export const storySlice = createSlice({
@@ -10,10 +11,13 @@ export const storySlice = createSlice({
   reducers: {
     setStoryData: (state,action) => {
       state.storyData = action.payload
+    },
+    setStoryList: (state,action) => {
+      state.storyList = action.payload
     }
   },
 })
 
-export const {setStoryData} = storySlice.actions
+export const {setStoryData,setStoryList} = storySlice.actions
 
 export default storySlice.reducer

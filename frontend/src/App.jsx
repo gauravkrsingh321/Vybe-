@@ -13,12 +13,15 @@ import Upload from './pages/Upload';
 import useAllPost from './hooks/useAllPost';
 import Reels from './pages/Reels';
 import useAllReel from './hooks/useAllReel';
+import Story from './pages/Story';
+import useAllStories from './hooks/useAllStories';
 
 const App = () => {
   useCurrentUser();
   useSuggestedUsers();
-  useAllPost()
-  useAllReel()
+  useAllPost();
+  useAllReel();
+  useAllStories();
   const {userData,loading} = useSelector(state=>state.user)
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><ClipLoader color='blue' size={60}/></div>
@@ -31,6 +34,7 @@ const App = () => {
         <Route path="/login" element={!userData?<Login />:<Navigate to={'/'}/>} />
         <Route path='/forgot-password' element={!userData?<ForgotPassword/>:<Navigate to={'/'}/>}/>
         <Route path='/profile/:username' element={userData?<Profile/>:<Navigate to={'/login'}/>}/>
+        <Route path='/story/:username' element={userData?<Story/>:<Navigate to={'/login'}/>}/>
         <Route path='/editprofile' element={userData?<EditProfile/>:<Navigate to={'/login'}/>}/>
         <Route path='/upload' element={userData?<Upload/>:<Navigate to={'/login'}/>}/>
         <Route path='/reels' element={userData?<Reels/>:<Navigate to={'/login'}/>}/>

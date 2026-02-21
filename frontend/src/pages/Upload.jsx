@@ -5,10 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import VideoPlayer from "../components/VideoPlayer";
 import { setPostData } from "../redux/postSlice";
-import { setStoryData } from "../redux/storySlice";
 import { setReelData } from "../redux/reelSlice";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
+import { setUserData } from "../redux/userSlice";
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -19,8 +19,8 @@ const Upload = () => {
   const [mediaType, setMediaType] = useState("");
   const [caption, setCaption] = useState("");
   const dispatch = useDispatch();
-  const {postData} = useSelector(state=>state.post);
-  const {storyData} = useSelector(state=>state.story);
+  const {postData} = useSelector(state=>state.post)
+  const {userData} = useSelector(state=>state.user);
   const {reelData} = useSelector(state=>state.reel);
   const [loading, setLoading] = useState(false)
 
@@ -57,7 +57,10 @@ const Upload = () => {
       formData.append("mediaType",mediaType);
       formData.append("media",backendMedia);
       const result = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/story/uploadStory`,formData,{withCredentials:true});
-      dispatch(setStoryData([...storyData,result.data]));
+     setUserData({
+  ...userData,
+  story: result.data
+});
       navigate("/")
     } 
     catch (error) {

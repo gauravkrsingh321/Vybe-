@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FiVolume2, FiVolumeX } from "react-icons/fi";
 
-const VideoPlayer = ({ media }) => {
+const VideoPlayer = ({ media,className }) => {
   const videoTag = useRef();
   const [mute, setMute] = useState(true); // start muted for autoplay
   const [isPlaying, setIsPlaying] = useState(false); // start paused
@@ -53,13 +53,13 @@ const VideoPlayer = ({ media }) => {
     },[])
 
   return (
-    <div className="h-full  w-full relative overflow-hidden cursor-pointer max-w-full rounded-2xl">
+    <div className={`h-full  w-full relative overflow-hidden cursor-pointer max-w-full ${className}`}>
       <video
         src={media}
         ref={videoTag}
         muted={mute}
         loop
-        className="h-full w-full object-cover rounded-2xl"
+        className={`h-full w-full object-cover ${className}`}
         onClick={handleClick}
       ></video>
 

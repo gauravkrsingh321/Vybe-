@@ -95,7 +95,7 @@ const Post = ({ post }) => {
 
         {post.mediaType === "video" && (
           <div className="w-full md:w-[430px] overflow-hidden md:h-[400px] h-[300px] xl:w-[600px] flex items-center justify-center">
-            <VideoPlayer media={post.media} />
+            <VideoPlayer className="rounded-2xl" media={post.media} />
           </div>
         )}
       </div>

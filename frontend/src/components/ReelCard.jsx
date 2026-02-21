@@ -169,7 +169,7 @@ const ReelCard = ({ reel }) => {
           <div className="w-[30px] h-[30px] md:w-10 md:h-10 border-2 border-black rounded-full cursor-pointer overflow-hidden">
             <img
               className="w-full object-cover"
-              src={reel?.author?.profilePic || dp}
+              src={userData?.profilePic || dp}
               alt="dp"
             />
           </div>

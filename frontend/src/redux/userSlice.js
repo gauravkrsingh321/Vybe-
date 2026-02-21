@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  userData:null,
+   userData:null,
    loading: true, // ✅ start true until auth check completes
    suggestedUsers: null,
    profileData:null,

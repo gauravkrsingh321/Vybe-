@@ -63,7 +63,7 @@ const userSchema = new mongoose.Schema(
         ref: "Reel",
       },
     ],
-    stories: {
+    story: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Story",
     },

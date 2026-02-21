@@ -1,9 +1,11 @@
+import uploadToCloudinary from "../config/cloudinary.js";
 import Story from "../models/story.model.js";
 import { User } from "../models/user.model.js";
 
 export const uploadStory = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
+    console.log(user)
     if(user.story) {
       //previous story
       await Story.findByIdAndDelete(user.story);
@@ -21,7 +23,9 @@ export const uploadStory = async (req, res) => {
       });
     }
     const story = await Story.create({ author: req.userId, media, mediaType });
+    console.log(story)
     user.story = story._id;
+    console.log(story.user)
     await user.save();
     const populatedStory = await Story.findById(story._id)
       .populate("author", "name username profilePic")

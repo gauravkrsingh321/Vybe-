@@ -1,13 +1,16 @@
 import React from 'react'
 import logo1 from "../assets/logo2.png"
 import { FaRegHeart } from 'react-icons/fa6'
-import StoryCard from './StoryCard'
 import BottomNav from './BottomNav'
 import { useSelector } from 'react-redux'
 import Post from './Post'
+import StoryDp from './StoryDp'
 
 const Feed = () => {
     const {postData} = useSelector(state=>state.post);
+    const {userData} = useSelector(state=>state.user);
+    const {storyList} = useSelector(state=>state.story);
+    
   return (
     <div className='lg:w-[50%] w-full bg-black min-h-screen lg:h-screen relative lg:overflow-y-auto'>
       <div className='flex justify-between lg:hidden w-full h-[100px] p-5 items-center'>
@@ -16,13 +19,13 @@ const Feed = () => {
             </div>
 
             <div className='flex w-full overflow-auto gap-2.5 items-center p-5'>
-              <StoryCard username={"adnjkefj"}/>
-              <StoryCard username={"adnjkefj"}/>
-              <StoryCard username={"adnjkefj"}/>
-              <StoryCard username={"adnklednenklesjdnjkefj"}/>
-              <StoryCard username={"adnjkefj"}/>
-              <StoryCard username={"adnjkefj"}/>
-              <StoryCard username={"adnjkefj"}/>
+              <StoryDp username={"Your Story"} ProfilePic={userData?.profilePic} story={userData?.story}/>
+
+              {
+                storyList?.map((story)=>(
+                  <StoryDp key={story._id} username={story?.author?.username} ProfilePic={story?.author?.profilePic} story={story}/>
+                ))
+              }
             </div>
 
             <div className='w-full bg-white pb-[120px] min-h-screen flex flex-col items-center gap-10 p-2.5 pt-10 rounded-t-[60px] relative'>
@@ -38,4 +41,4 @@ const Feed = () => {
   )
 }
 
-export default Feed
+export default Feed 

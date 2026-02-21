@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import isAuth from "../middlewares/isAuth.js";
 import { upload } from "../middlewares/multer.js";
 import { getAllStories, getStoryByUsername, uploadStory, viewStory } from "../controllers/story.controller.js";
@@ -10,4 +10,4 @@ router.get("/viewStory/:storyId",isAuth,viewStory);
 router.get("/storyByUsername/:username",isAuth,getStoryByUsername);
 router.get("/allStories",isAuth,getAllStories);
 
-export default router
+export default router;
