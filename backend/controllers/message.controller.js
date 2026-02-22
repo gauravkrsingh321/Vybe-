@@ -67,3 +67,37 @@ export const getAllMessages = async (req,res) => {
     });
   }
 }
+
+export const getPrevUserChats = async (req, res) => {
+  try {
+    const currentUserId = req.userId;
+
+    const conversations = await Conversation.find({
+      participants: currentUserId,
+    })
+      .populate("participants")
+      .sort({ updatedAt: -1 });
+
+    const userMap = {}; // 562983u9:user
+
+    conversations.forEach((conv) => {
+      conv.participants.forEach((user) => {
+        if (user._id != currentUserId) {
+          userMap[user._id] = user;
+        }
+      });
+    });
+
+    const previousUsers = Object.values(userMap);
+    return res.status(200).json({
+      success: true,
+      previousUsers
+    });
+
+  } catch (error) {
+     return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

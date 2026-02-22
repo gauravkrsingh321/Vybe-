@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   storyData:[],
-  storyList:[]
+  storyList:[],
+  currentUserStory:null //It will instantly update the ui after uploading story
 }
 
 export const storySlice = createSlice({
@@ -14,10 +15,13 @@ export const storySlice = createSlice({
     },
     setStoryList: (state,action) => {
       state.storyList = action.payload
+    },
+    setCurrentUserStory: (state,action) => {
+      state.currentUserStory = action.payload
     }
   },
 })
 
-export const {setStoryData,setStoryList} = storySlice.actions
+export const {setStoryData,setStoryList,setCurrentUserStory} = storySlice.actions
 
 export default storySlice.reducer

@@ -9,6 +9,7 @@ import { setReelData } from "../redux/reelSlice";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import { setUserData } from "../redux/userSlice";
+import { setCurrentUserStory } from "../redux/storySlice";
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const Upload = () => {
       formData.append("media",backendMedia);
       const result = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/post/uploadPost`,formData,{withCredentials:true},);
       dispatch(setPostData([...postData,result.data]))
-      navigate("/")
+      navigate("/");
     } 
     catch (error) {
       console.log(error);
@@ -57,10 +58,8 @@ const Upload = () => {
       formData.append("mediaType",mediaType);
       formData.append("media",backendMedia);
       const result = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/story/uploadStory`,formData,{withCredentials:true});
-     setUserData({
-  ...userData,
-  story: result.data
-});
+      console.log(result)
+      dispatch(setCurrentUserStory(result?.data?.populatedStory))
       navigate("/")
     } 
     catch (error) {

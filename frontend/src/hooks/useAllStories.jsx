@@ -1,23 +1,24 @@
-import axios from 'axios'
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { setStoryList } from '../redux/storySlice.js';
 
 function useAllStories() {
   const dispatch = useDispatch();
   const {userData} = useSelector(state=>state.user);
+  const {storyData} = useSelector(state=>state.story);
 
   useEffect(()=>{
     const fetchAllStories = async()=>{
       try {
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/story/allStories`,{withCredentials:true});
-        dispatch(setStoryList(res.data.stories))
+        dispatch(setStoryList(res.data.stories));
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
     fetchAllStories();
-  },[dispatch,userData])
+  },[dispatch,userData,storyData]);
 }
 
-export default useAllStories
+export default useAllStories;

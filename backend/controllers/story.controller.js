@@ -5,7 +5,6 @@ import { User } from "../models/user.model.js";
 export const uploadStory = async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-    console.log(user)
     if(user.story) {
       //previous story
       await Story.findByIdAndDelete(user.story);
@@ -23,9 +22,9 @@ export const uploadStory = async (req, res) => {
       });
     }
     const story = await Story.create({ author: req.userId, media, mediaType });
-    console.log(story)
+    // console.log("Story",story)
     user.story = story._id;
-    console.log(story.user)
+    // console.log(user.story)
     await user.save();
     const populatedStory = await Story.findById(story._id)
       .populate("author", "name username profilePic")

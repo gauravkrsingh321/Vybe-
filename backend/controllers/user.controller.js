@@ -4,7 +4,7 @@ import uploadToCloudinary from "../config/cloudinary.js";
 export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).populate("posts reels posts.author posts.comments");
+    const user = await User.findById(userId).populate("posts reels posts.author posts.comments story");
     if (!user) {
       return res.status(400).json({
         success: false,
