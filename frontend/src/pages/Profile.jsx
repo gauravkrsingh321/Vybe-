@@ -18,13 +18,13 @@ const Profile = () => {
   const [postType, setPostType] = useState("posts");
   const { postData } = useSelector((state) => state.post);
   const userPosts = postData?.filter(
-    (post) => post.author?._id === profileData?.user?._id
+    (post) => post.author?._id === profileData?.user?._id,
   );
   const profileHandler = useCallback(async () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/user/getProfile/${username}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       dispatch(setProfileData(res.data));
     } catch (error) {
@@ -39,7 +39,7 @@ const Profile = () => {
       await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       );
       dispatch(setUserData(null));
     } catch (error) {
@@ -194,7 +194,7 @@ const Profile = () => {
                 <div
                   key={index}
                   className="w-10 h-10 border-2 border-black rounded-full cursor-pointer overflow-hidden absolute"
-                  style={{ left: `${index *10}px` }}
+                  style={{ left: `${index * 10}px` }}
                 >
                   <img
                     src={user?.profilePic || dp}
@@ -238,6 +238,7 @@ const Profile = () => {
             <button
               className="px-2.5 min-w-[150px] py-[5px]
         h-10 bg-white cursor-pointer rounded-2xl"
+              onClick={() => navigate("/messagearea")}
             >
               Message
             </button>
@@ -296,7 +297,7 @@ const Profile = () => {
                   (post, index) =>
                     userData?.saved.includes(post._id) && (
                       <Post post={post} key={index} />
-                    )
+                    ),
                 )}
             </>
           )}

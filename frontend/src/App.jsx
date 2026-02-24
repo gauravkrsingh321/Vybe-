@@ -15,6 +15,8 @@ import Reels from './pages/Reels';
 import useAllReel from './hooks/useAllReel';
 import Story from './pages/Story';
 import useAllStories from './hooks/useAllStories';
+import Messages from './pages/Messages';
+import MessageArea from './pages/MessageArea';
 
 const App = () => {
   useCurrentUser();
@@ -37,6 +39,8 @@ const App = () => {
         <Route path='/story/:username' element={userData?<Story/>:<Navigate to={'/login'}/>}/>
         <Route path='/editprofile' element={userData?<EditProfile/>:<Navigate to={'/login'}/>}/>
         <Route path='/upload' element={userData?<Upload/>:<Navigate to={'/login'}/>}/>
+         <Route path='/messages' element={userData?<Messages/>:<Navigate to={'/login'}/>}/>
+         <Route path='/messagearea' element={userData?<MessageArea/>:<Navigate to={'/login'}/>}/>
         <Route path='/reels' element={userData?<Reels/>:<Navigate to={'/login'}/>}/>
       </Routes>
     </Router>
