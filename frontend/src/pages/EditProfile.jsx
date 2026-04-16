@@ -34,7 +34,7 @@ const EditProfile = () => {
         formData.append("username",username);
         formData.append("bio",bio);
         formData.append("profession",profession);
-        if (gender && gender.trim() !== "") {
+        if(gender && gender.trim() !== "") {
   formData.append("gender", gender);
 }
         if(backendImage) {

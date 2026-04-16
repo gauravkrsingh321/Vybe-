@@ -6,9 +6,9 @@ import { setProfileData, setUserData } from "../redux/userSlice";
 import dp from "../assets/blank_dp.png";
 import { MdOutlineKeyboardBackspace } from "react-icons/md";
 import BottomNav from "../components/BottomNav";
-import { ClipLoader } from "react-spinners";
 import FollowButton from "../components/FollowButton";
 import Post from "../components/Post";
+import { setSelectedUser } from "../redux/messageSlice";
 
 const Profile = () => {
   const { username } = useParams();
@@ -238,7 +238,9 @@ const Profile = () => {
             <button
               className="px-2.5 min-w-[150px] py-[5px]
         h-10 bg-white cursor-pointer rounded-2xl"
-              onClick={() => navigate("/messagearea")}
+              onClick={() =>{ 
+                dispatch(setSelectedUser(profileData))
+                navigate("/messagearea")}}
             >
               Message
             </button>

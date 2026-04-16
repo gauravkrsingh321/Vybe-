@@ -5,7 +5,6 @@ import dp from "../assets/blank_dp.png";
 import FollowButton from './FollowButton';
 import { setProfileData } from "../redux/userSlice";
 
-
 const OtherUser = ({user}) => {
     const {suggestedUsers} = useSelector(state=>state.user);
     const dispatch = useDispatch()
