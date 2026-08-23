@@ -18,7 +18,7 @@ const Feed = () => {
     <div className='lg:w-[50%] w-full bg-black min-h-screen lg:h-screen relative lg:overflow-y-auto'>
       <div className='flex justify-between lg:hidden w-full h-[100px] p-5 items-center'>
               <img src={logo1} alt="logo" className='w-20' />
-             <div className='flex items-center gap-2.5'><FaRegHeart className="text-white w-[25px] h-[25px]"/><BiMessageAltDetail className="text-white w-[25px] h-[25px]" onClick={()=>navigate("/messages")} /></div>
+             <div className='flex items-center gap-2.5'><FaRegHeart className="text-white w-[25px] h-[25px]"/><BiMessageAltDetail className="text-white cursor-pointer w-[25px] h-[25px]" onClick={()=>navigate("/messages")} /></div>
             </div>
 
             <div className='flex w-full overflow-auto gap-2.5 items-center p-5'>

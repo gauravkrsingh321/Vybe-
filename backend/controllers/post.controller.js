@@ -1,17 +1,16 @@
 import uploadToCloudinary from "../config/cloudinary.js";
 import { User } from "../models/user.model.js";
 import Post from "../models/post.model.js";
+import { io } from "../socket.js";
 
 export const uploadPost = async (req, res) => {
   try {
     const { caption, mediaType } = req.body;
     let media;
-    console.log("req.file:", req.file);
-    console.log("req.file.path:", req.file?.path);
 
     if (req.file) {
       media = await uploadToCloudinary(req.file.path);
-      media = media.secure_url;
+      media = media;
     } else {
       return res.status(400).json({
         success: false,
@@ -30,13 +29,14 @@ export const uploadPost = async (req, res) => {
     await user.save();
     const populatedPost = await Post.findById(post._id).populate(
       "author",
-      "name username profilePic"
+      "name username profilePic",
     );
     return res.status(200).json({
       success: true,
       populatedPost,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -74,18 +74,46 @@ export const likePost = async (req, res) => {
     }
 
     const alreadyLiked = post.likes.some(
-      (id) => id.toString() === req.userId.toString()
+      (id) => id.toString() === req.userId.toString(),
     );
 
     if (alreadyLiked) {
       post.likes = post.likes.filter(
-        (id) => id.toString() !== req.userId.toString()
+        (id) => id.toString() !== req.userId.toString(),
       );
     } else {
       post.likes.push(req.userId);
+
+      if (post.author._id != req.userId) {
+        const notification = await Notification.create({
+          sender: req.userId,
+          receiver: post.author._id,
+          type: "like",
+          post: post._id,
+          message: "liked your post",
+        });
+
+        const populatedNotification = await Notification.findById(
+          notification._id,
+        ).populate("sender receiver post");
+
+        const receiverSocketId = getSocketId(post.author._id);
+
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit(
+            "newNotification",
+            populatedNotification,
+          );
+        }
+      }
     }
     await post.save();
     await post.populate("author", "name username profilePic");
+
+    io.emit("likedPost", {
+      postId: post._id,
+      likes: post.likes,
+    });
     return res.status(200).json({
       success: true,
       post,
@@ -113,9 +141,33 @@ export const commentOnPost = async (req, res) => {
       author: req.userId,
       message,
     });
+    if (post.author._id != req.userId) {
+      const notification = await Notification.create({
+        sender: req.userId,
+        receiver: post.author._id,
+        type: "comment",
+        post: post._id,
+        message: "commented on your post",
+      });
+
+      const populatedNotification = await Notification.findById(
+        notification._id,
+      ).populate("sender receiver post");
+
+      const receiverSocketId = getSocketId(post.author._id);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newNotification", populatedNotification);
+      }
+    }
     await post.save();
     await post.populate("author", "name username profilePic");
     await post.populate("comments.author");
+
+    io.emit("commentedOnPost", {
+      postId: post._id,
+      comments: post.comments,
+    });
     return res.status(200).json({
       success: true,
       post,
@@ -140,12 +192,12 @@ export const savePost = async (req, res) => {
     }
 
     const alreadySaved = user.saved.some(
-      (id) => id.toString() === postId.toString()
+      (id) => id.toString() === postId.toString(),
     );
 
     if (alreadySaved) {
       user.saved = user.saved.filter(
-        (id) => id.toString() !== postId.toString()
+        (id) => id.toString() !== postId.toString(),
       );
     } else {
       user.saved.push(postId);

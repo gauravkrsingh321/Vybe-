@@ -4,16 +4,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setFollowing, setUserData } from '../redux/userSlice.js'
 import { setCurrentUserStory } from '../redux/storySlice.js';
 
-function useCurrentUser() {
+function useFollowingList() {
   const dispatch = useDispatch();
-  const {currentUserStory} = useSelector(state=>state.story);
 
   useEffect(()=>{
     const fetchUser = async()=>{
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/current`,{withCredentials:true});
-        dispatch(setUserData(res?.data?.user))
-        dispatch(setCurrentUserStory(res?.data?.user?.story))
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/user/followingList`,{withCredentials:true});
+        dispatch(setFollowing(res?.data?.followingList))
       } catch (error) {
         console.log(error)
         dispatch(setUserData(null))
@@ -23,4 +21,4 @@ function useCurrentUser() {
   },[dispatch])
 }
 
-export default useCurrentUser
+export default useFollowingList

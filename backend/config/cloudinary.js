@@ -12,7 +12,7 @@ const uploadToCloudinary = async (file) => {
       resource_type: "auto",
     });
     fs.unlinkSync(file); //delete file after we have received it in result
-    return result;
+    return result.secure_url;
   } 
   catch (error) {
     fs.unlinkSync(file);

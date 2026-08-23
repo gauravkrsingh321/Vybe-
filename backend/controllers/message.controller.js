@@ -1,5 +1,7 @@
+import uploadToCloudinary from "../config/cloudinary.js";
 import { Conversation } from "../models/conversation.model.js";
 import { Message } from "../models/message.model.js";
+import { getSocketId, io } from "../socket.js";
 
 
 export const sendMessage = async (req,res)=>{
@@ -31,9 +33,14 @@ export const sendMessage = async (req,res)=>{
       await conversation.save()
     }
 
+    const receiverSocketId = getSocketId(receiverId);
+    if(receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
     return res.status(200).json({
       success: true,
-      newMessage,
+      newMessage
     });
   } catch (error) {
     return res.status(500).json({
@@ -88,7 +95,10 @@ export const getPrevUserChats = async (req, res) => {
       });
     });
 
-    const previousUsers = Object.values(userMap);
+    const previousUsers = Object.values(userMap).map((user) => ({
+      user,
+    }));
+
     return res.status(200).json({
       success: true,
       previousUsers

@@ -7,25 +7,30 @@ import { MdOutlineBookmarkBorder, MdOutlineComment } from "react-icons/md";
 import { IoSendSharp } from "react-icons/io5";
 import axios from "axios";
 import { setPostData } from "../redux/postSlice";
-import {setUserData} from "../redux/userSlice"
+import { setUserData } from "../redux/userSlice";
 import FollowButton from "./FollowButton";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 const Post = ({ post }) => {
   const { userData } = useSelector((state) => state.user);
   const { postData } = useSelector((state) => state.post);
   const [showComment, setShowComment] = useState(false);
   const [message, setMessage] = useState("");
+  const { socket } = useSelector((state) => state.socket);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLike = async () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/post/like/${post._id}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       const updatedPost = res.data.post;
       const updatedPosts = postData.map((p) =>
-        p._id === post._id ? updatedPost : p
+        p._id === post._id ? updatedPost : p,
       );
       dispatch(setPostData(updatedPosts));
     } catch (error) {
@@ -38,11 +43,11 @@ const Post = ({ post }) => {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/post/postComment/${post._id}`,
         { message },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       const updatedPost = res.data.post;
       const updatedPosts = postData.map((p) =>
-        p._id === post._id ? updatedPost : p
+        p._id === post._id ? updatedPost : p,
       );
       dispatch(setPostData(updatedPosts));
     } catch (error) {
@@ -50,11 +55,11 @@ const Post = ({ post }) => {
     }
   };
 
-   const handleSaved = async () => {
+  const handleSaved = async () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_URL}/api/post/saved/${post._id}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       dispatch(setUserData(res.data.user));
     } catch (error) {
@@ -62,24 +67,54 @@ const Post = ({ post }) => {
     }
   };
 
+  useEffect(() => {
+    socket?.on("likedPost", (updatedData) => {
+      const updatedPosts = postData.map((p) =>
+        p._id === updatedData.postId ? { ...p, likes: updatedData.likes } : p,
+      );
+      dispatch(setPostData(updatedPosts));
+    });
+    socket?.on("commentedOnPost", (updatedData) => {
+      const updatedPosts = postData.map((p) =>
+        p._id === updatedData.postId
+          ? { ...p, comments: updatedData.comments }
+          : p,
+      );
+      dispatch(setPostData(updatedPosts));
+    });
+
+    return () => {
+      socket?.off("likedPost");
+      socket?.off("commentedOnPost");
+    };
+  }, [socket, postData, dispatch]);
+
   return (
-    <div className="w-[90%] min-h-[450px] flex flex-col  bg-white items-center shadow-2xl shadow-[#00000058] rounded-2xl">
+    <div className="w-[90%] min-h-[450px] flex flex-col  items-center shadow-2xl shadow-[#00000058] rounded-2xl">
       <div className="w-full h-20 justify-between items-center px-2.5 flex">
-        <div className="flex justify-center items-center gap-2.5 md:gap-5">
-          <div className="w-10 h-10 md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
+        <div
+          className="flex justify-center items-center gap-2.5 md:gap-5"
+          onClick={() => navigate(`/profile/${post?.author?.username}`)}
+        >
+          <div className="w-10 h-10 md:w-[60px]  md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
             <img
               className="w-full object-cover"
               src={post.author?.profilePic || dp}
               alt="dp"
             />
           </div>
-          <div className="w-[150px] font-semibold truncate">
+          <div className="w-[150px] cursor-pointer font-semibold truncate">
             {post.author?.username}
           </div>
         </div>
-        {
-          userData._id !== post.author?._id && <FollowButton tailwind={"px-2.5 w-[60px] md:w-[100px] py-[5px] h-[30px] md:h-10 bg-black text-white rounded-2xl text-[14px] md:text-[16px] cursor-pointer"} targetUserId={post.author?._id}/>
-        }
+        {userData._id !== post.author?._id && (
+          <FollowButton
+            tailwind={
+              "px-2.5 min-w-[60px] md:min-w-[100px] py-[5px] h-[30px] md:h-10 bg-black text-white rounded-2xl text-[14px] md:text-[16px] cursor-pointer"
+            }
+            targetUserId={post.author?._id}
+          />
+        )}
       </div>
 
       <div className="w-[90%] min-h-[400px] md:mt-4  flex items-start flex-col md:items-center justify-center">
@@ -116,23 +151,25 @@ const Post = ({ post }) => {
             </span>
           </div>
           <div className="flex justify-center items-center gap-[5px]">
-            <MdOutlineComment onClick={()=>setShowComment(prev=>!prev)} className="w-[25px] h-[25px] cursor-pointer" />
+            <MdOutlineComment
+              onClick={() => setShowComment((prev) => !prev)}
+              className="w-[25px] h-[25px] cursor-pointer"
+            />
             <span>
               <span>{post.comments?.length || 0}</span>
             </span>
           </div>
         </div>
         <button
-  className="cursor-pointer p-2 rounded-full active:scale-90 no-select"
-  onClick={handleSaved}
->
-  {userData?.saved?.includes(post?._id) ? (
-    <GoBookmarkFill className="w-[25px] h-[25px]" />
-  ) : (
-    <MdOutlineBookmarkBorder className="w-[25px] h-[25px]" />
-  )}
-</button>
-
+          className="cursor-pointer p-2 rounded-full active:scale-90 no-select"
+          onClick={handleSaved}
+        >
+          {userData?.saved?.includes(post?._id) ? (
+            <GoBookmarkFill className="w-[25px] h-[25px]" />
+          ) : (
+            <MdOutlineBookmarkBorder className="w-[25px] h-[25px]" />
+          )}
+        </button>
       </div>
 
       {post?.caption && (
@@ -170,7 +207,10 @@ const Post = ({ post }) => {
           <div className="w-full max-h-[300px] overflow-auto">
             <p className="px-5 font-bold">All Comments</p>
             {post.comments?.map((com, index) => (
-              <div key={index} className="w-full px-5 py-5 flex items-center gap-5 border-b-2 border-b-gray-400">
+              <div
+                key={index}
+                className="w-full px-5 py-5 flex items-center gap-5 border-b-2 border-b-gray-400"
+              >
                 <div className="w-10 h-10 md:w-[60px] md:h-[60px] border-2 border-black rounded-full cursor-pointer overflow-hidden">
                   <img
                     className="w-full object-cover"

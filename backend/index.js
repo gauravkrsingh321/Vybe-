@@ -9,9 +9,9 @@ import reelRoutes from "./routes/reel.routes.js"
 import storyRoutes from "./routes/story.routes.js"
 import messageRoutes from "./routes/message.routes.js"
 import cors from "cors"
+import { app, server } from "./socket.js";
 dotenv.config()
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 //Middlewares
@@ -35,7 +35,7 @@ app.use('/api/message',messageRoutes)
 const startServer = async () => {
   try {
     await connectToDB();
-    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+    server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
   } catch (error) {
     console.error("❌ Failed to start server:", error);
   }

@@ -7,35 +7,43 @@ import {useNavigate} from "react-router";
 import SenderMessage from "../components/SenderMessage";
 import { useEffect, useState } from "react";
 import { useRef } from "react";
-import axios from "axios"
+import axios from "axios";
 import { setMessages } from "../redux/messageSlice";
 import ReceiverMessage from "../components/ReceiverMessage";
 
 const MessageArea = () => {
-  const {selectedUser,messages} = useSelector((state) => state.message);
-  const {userData} = useSelector(state=>state.user);
+  const {selectedUser,messages} = useSelector(state => state.message);
+  const {socket} = useSelector(state => state.socket)
+  const {userData} = useSelector(state => state.user);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
-  const [frontendImage, setFrontendImage] = useState(null)
-  const [backendImage, setBackendImage] = useState(null)
+  const [frontendImage, setFrontendImage] = useState(null);
+  const [backendImage, setBackendImage] = useState(null);
   const imageInput = useRef(null);
 
   const handleImage = (e) => {
     const file = e.target.files[0];
-      setBackendImage(file)
-      setFrontendImage(URL.createObjectURL(file))
+    setBackendImage(file)
+    setFrontendImage(URL.createObjectURL(file))
   }
 
   const sendMessageHandler = async (e)=>{
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/message/send/${selectedUser?.user?._id}`,{message:input},{withCredentials:true});
+      const formData = new FormData();
+      formData.append("message",input);
+      if(backendImage) {
+        formData.append("image",backendImage);
+      }
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/message/send/${selectedUser?.user?._id}`,formData,{withCredentials:true});
       dispatch(setMessages([...messages,res.data.newMessage]));
       setInput("")
+      setBackendImage(null)
+      setFrontendImage(null)
     } catch (error) {
-      console.log(error)
+      console.log(error.response?.data); 
     } 
   }
 
@@ -55,6 +63,13 @@ const MessageArea = () => {
     fetchAllMessages();
   }
   },[dispatch,selectedUser?.user?._id])
+
+  useEffect(()=>{
+    socket?.on("newMessage",(mess)=>{
+      dispatch(setMessages([...messages,mess]))
+    })
+    return ()=> socket?.off("newMessage")
+  },[messages,dispatch,socket])
 
   return (
     <div className="w-full h-screen bg-black relative">
@@ -88,7 +103,7 @@ const MessageArea = () => {
         </div>
       </div>
 
-      <div className="w-full h-[80%] pt-[100px] pb-[120px] lg:pb-[150px] px-10 flex flex-col gap-[50px] overflow-auto bg-black">
+      <div className="w-full h-[80%] pt-[100px] px-10 flex flex-col gap-[50px] overflow-auto bg-black">
         { 
          loading ? (
           <>

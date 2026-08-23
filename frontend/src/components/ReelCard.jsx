@@ -18,6 +18,7 @@ const ReelCard = ({ reel }) => {
   const [progress, setProgress] = useState(0);
   const { userData } = useSelector((state) => state.user);
   const { reelData } = useSelector((state) => state.reel);
+  const { socket } = useSelector((state) => state.socket);
   const [showHeart, setShowHeart] = useState(false);
   const [showComment, setShowComment] = useState(false);
   const [message, setMessage] = useState("");
@@ -72,7 +73,7 @@ const ReelCard = ({ reel }) => {
         r._id === reel._id ? updatedReel : r,
       );
       dispatch(setReelData(updatedReels));
-      setMessage("")
+      setMessage("");
     } catch (error) {
       console.log(error);
     }
@@ -123,6 +124,28 @@ const ReelCard = ({ reel }) => {
     };
   }, []);
 
+  useEffect(() => {
+    socket?.on("likedReel", (updatedData) => {
+      const updatedReels = reelData.map((r) =>
+        r._id === updatedData.reelId ? { ...r, likes: updatedData.likes } : r,
+      );
+      dispatch(setReelData(updatedReels));
+    });
+    socket?.on("commentedOnReel", (updatedData) => {
+      const updatedReels = reelData.map((r) =>
+        r._id === updatedData.reelId
+          ? { ...r, comments: updatedData.comments }
+          : r,
+      );
+      dispatch(setReelData(updatedReels));
+    });
+
+    return () => {
+      socket?.off("likedReel");
+      socket?.off("commentedOnReel");
+    };
+  }, [socket, reelData, dispatch]);
+
   return (
     <div className="w-[420px] h-screen flex items-center justify-center border-l-2 border-r-2 border-gray-800 relative overflow-hidden">
       {showHeart && (
@@ -147,20 +170,23 @@ const ReelCard = ({ reel }) => {
           )}
 
           {reel?.comments?.map((com) => (
-            <div key={com._id} className="w-full flex flex-col gap-[5px] border-b border-gray-800 justify-center  mt-2.5 pb-2.5">
+            <div
+              key={com._id}
+              className="w-full flex flex-col gap-[5px] border-b border-gray-800 justify-center  mt-2.5 pb-2.5"
+            >
               <div className="flex justify-start items-center gap-2.5 md:gap-3.5">
-          <div className="w-[30px] h-[30px] md:w-10 md:h-10 border-2 border-black rounded-full cursor-pointer overflow-hidden">
-            <img
-              className="w-full object-cover"
-              src={com.author?.profilePic || dp}
-              alt="dp"
-            />
-          </div>
-          <div className="w-[150px] text-white font-semibold truncate">
-            {com.author?.username}
-          </div>
-        </div>
-        <div className="text-white pl-13">{com.message}</div>
+                <div className="w-[30px] h-[30px] md:w-10 md:h-10 border-2 border-black rounded-full cursor-pointer overflow-hidden">
+                  <img
+                    className="w-full object-cover"
+                    src={com.author?.profilePic || dp}
+                    alt="dp"
+                  />
+                </div>
+                <div className="w-[150px] text-white font-semibold truncate">
+                  {com.author?.username}
+                </div>
+              </div>
+              <div className="text-white pl-13">{com.message}</div>
             </div>
           ))}
         </div>
@@ -180,12 +206,14 @@ const ReelCard = ({ reel }) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          {message && <button
-            onClick={handleComment}
-            className="absolute right-5 cursor-pointer"
-          >
-            <IoSendSharp className="w-[25px] h-[25px] text-white" />
-          </button>}
+          {message && (
+            <button
+              onClick={handleComment}
+              className="absolute right-5 cursor-pointer"
+            >
+              <IoSendSharp className="w-[25px] h-[25px] text-white" />
+            </button>
+          )}
         </div>
       </div>
 

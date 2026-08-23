@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react'
 import { useDispatch, useSelector } from "react-redux";
-import { toggoleFollow } from '../redux/userSlice';
+import { toggleFollow } from '../redux/userSlice';
 
 const FollowButton = ({targetUserId,tailwind,onFollowChange}) => {
   const {following} = useSelector(state=>state.user);
@@ -13,7 +13,7 @@ const FollowButton = ({targetUserId,tailwind,onFollowChange}) => {
       if(onFollowChange) {
         onFollowChange()
       }
-      dispatch(toggoleFollow(targetUserId))
+      dispatch(toggleFollow(targetUserId))
     } 
     catch (error) {
       console.log(error)

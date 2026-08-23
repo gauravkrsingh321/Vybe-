@@ -4,7 +4,9 @@ import uploadToCloudinary from "../config/cloudinary.js";
 export const getCurrentUser = async (req, res) => {
   try {
     const userId = req.userId;
-    const user = await User.findById(userId).populate("posts reels posts.author posts.comments story");
+    const user = await User.findById(userId).populate(
+      "posts reels posts.author posts.comments story following",
+    );
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -60,7 +62,7 @@ export const editProfile = async (req, res) => {
       });
     }
     const sameUserWithUsername = await User.findOne({ username }).select(
-      "-password"
+      "-password",
     );
     if (
       sameUserWithUsername &&
@@ -103,7 +105,9 @@ export const editProfile = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
     const username = req.params.username;
-    const user = await User.findOne({ username }).select("-password").populate("posts reels followers following");
+    const user = await User.findOne({ username })
+      .select("-password")
+      .populate("posts reels followers following");
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -145,10 +149,10 @@ export const follow = async (req, res) => {
 
     if (isFollowing) {
       currentUser.following = currentUser.following.filter(
-        (id) => id.toString() !== targetUserId
+        (id) => id.toString() !== targetUserId,
       );
       targetUser.followers = targetUser.followers.filter(
-        (id) => id.toString() !== currentUserId
+        (id) => id.toString() !== currentUserId,
       );
       await currentUser.save();
       await targetUser.save();
@@ -167,6 +171,50 @@ export const follow = async (req, res) => {
         message: "Followed Successfully",
       });
     }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const followingList = async (req, res) => {
+  try {
+    const result = await User.findById(req.userId);
+    return res.status(200).json({
+      success: true,
+      followingList: result?.following || [],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const search = async (req, res) => {
+  try {
+    const { keyword } = req.query;
+    if (!keyword) {
+      return res.status(400).json({
+        success: false,
+        message: "Keyword is required",
+      });
+    }
+
+    const users = await User.find({
+      $or: [
+        { username: { $regex: keyword, $options: "i" } },
+        { name: { $regex: keyword, $options: "i" } },
+      ],
+    }).select("-password");
+
+    return res.status(200).json({
+      success: true,
+      users,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
