@@ -3,44 +3,57 @@ import { Conversation } from "../models/conversation.model.js";
 import { Message } from "../models/message.model.js";
 import { getSocketId, io } from "../socket.js";
 
-
-export const sendMessage = async (req,res)=>{
+export const sendMessage = async (req, res) => {
   try {
     const senderId = req.userId;
-    const {receiverId} = req.params;
-    const {message} = req.body;
+    const { receiverId } = req.params;
+    const { message } = req.body;
+    if (!receiverId) {
+      return res.status(400).json({
+        success: false,
+        message: "Receiver Id is required",
+      });
+    }
+
+    // Message can be text, image, or both
+    if (!message?.trim() && !req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Message or image is required",
+      });
+    }
     let image;
-    if(req.file) {
+    if (req.file) {
       image = await uploadToCloudinary(req.file.path);
     }
     const newMessage = await Message.create({
-      sender:senderId,
-      receiver:receiverId,
+      sender: senderId,
+      receiver: receiverId,
       message,
-      image
-    })
+      image,
+    });
 
     let conversation = await Conversation.findOne({
-      participants:{$all:[senderId,receiverId]}
-    })
-    if(!conversation) {
-       conversation = await Conversation.create({
-        participants:[senderId,receiverId],
-        messages:[newMessage._id]
-      })
+      participants: { $all: [senderId, receiverId] },
+    });
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [senderId, receiverId],
+        messages: [newMessage._id],
+      });
     } else {
       conversation.messages.push(newMessage._id);
-      await conversation.save()
+      await conversation.save();
     }
 
     const receiverSocketId = getSocketId(receiverId);
-    if(receiverSocketId) {
+    if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
     return res.status(200).json({
       success: true,
-      newMessage
+      newMessage,
     });
   } catch (error) {
     return res.status(500).json({
@@ -48,24 +61,24 @@ export const sendMessage = async (req,res)=>{
       message: error.message,
     });
   }
-}
+};
 
-export const getAllMessages = async (req,res) => {
+export const getAllMessages = async (req, res) => {
   try {
     const senderId = req.userId;
-    const {receiverId} = req.params;
+    const { receiverId } = req.params;
     const conversation = await Conversation.findOne({
-      participants:{$all:[senderId,receiverId]}
-    }).populate("messages")
-    if(!conversation) {
+      participants: { $all: [senderId, receiverId] },
+    }).populate("messages");
+    if (!conversation) {
       return res.status(404).json({
-      success: false,
-      message: "Conversation Not Found",
-    });
+        success: false,
+        message: "Conversation Not Found",
+      });
     }
     return res.status(200).json({
       success: true,
-      messages:conversation?.messages
+      messages: conversation?.messages,
     });
   } catch (error) {
     return res.status(500).json({
@@ -73,7 +86,7 @@ export const getAllMessages = async (req,res) => {
       message: error.message,
     });
   }
-}
+};
 
 export const getPrevUserChats = async (req, res) => {
   try {
@@ -101,11 +114,10 @@ export const getPrevUserChats = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      previousUsers
+      previousUsers,
     });
-
   } catch (error) {
-     return res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

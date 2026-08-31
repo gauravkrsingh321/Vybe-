@@ -1,6 +1,8 @@
 import uploadToCloudinary from "../config/cloudinary.js";
 import Reel from "../models/reel.model.js";
 import { User } from "../models/user.model.js";
+import { io, getSocketId } from "../socket.js";
+import Notification from "../models/notification.model.js";
 
 export const uploadReel = async (req, res) => {
   try {
@@ -14,7 +16,6 @@ export const uploadReel = async (req, res) => {
     let media;
     if (req.file) {
       media = await uploadToCloudinary(req.file.path);
-      media = media.secure_url;
     } else {
       return res.status(400).json({
         success: false,
@@ -136,7 +137,7 @@ export const commentOnReel = async (req, res) => {
         message: "Reel not found",
       });
     }
-    reel.comments.push({
+    reel.comments.unshift({
       author: req.userId,
       message,
     });

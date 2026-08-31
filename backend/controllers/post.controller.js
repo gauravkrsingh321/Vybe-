@@ -1,7 +1,8 @@
 import uploadToCloudinary from "../config/cloudinary.js";
-import { User } from "../models/user.model.js";
 import Post from "../models/post.model.js";
-import { io } from "../socket.js";
+import { User } from "../models/user.model.js";
+import { io, getSocketId } from "../socket.js";
+import Notification from "../models/notification.model.js";
 
 export const uploadPost = async (req, res) => {
   try {
@@ -137,7 +138,7 @@ export const commentOnPost = async (req, res) => {
         message: "Post not found",
       });
     }
-    post.comments.push({
+    post.comments.unshift({
       author: req.userId,
       message,
     });

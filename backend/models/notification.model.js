@@ -29,9 +29,9 @@ const notificationSchema = new mongoose.Schema({
         ref: "Post"
     },
 
-    loop: {
+    reel: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Loop"
+        ref: "Reel"
     },
 
     isRead: {

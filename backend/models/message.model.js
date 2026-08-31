@@ -5,20 +5,24 @@ const messageSchema = new mongoose.Schema(
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required:true
+      required: true,
     },
     receiver: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required:true
+      // required:true
+    },
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
     },
     message: {
       type: String,
-      trim:true
+      trim: true,
     },
     image: {
-      type: String
-    }
+      type: String,
+    },
   },
 
   { timestamps: true },

@@ -25,40 +25,51 @@ import { setOnlineUsers, setSocket } from "./redux/socketSlice";
 import useFollowingList from "./hooks/useFollowingList.jsx";
 import usePrevChatUsers from "./hooks/usePrevChatUsers.jsx";
 import Search from "./pages/Search.jsx";
+import useAllNotifications from "./hooks/useAllNotifications.jsx";
+import Notifications from "./pages/Notifications.jsx";
+import { setNotificationData } from "./redux/userSlice.js";
 
 const App = () => {
-  useCurrentUser()
-  useSuggestedUsers()
-  useAllPost()
-  useAllReel()
-  useAllStories()
-  useFollowingList()
-  usePrevChatUsers()
-  const { userData, loading } = useSelector((state) => state.user);
+  useCurrentUser();
+  useSuggestedUsers();
+  useAllPost();
+  useAllReel();
+  useAllStories();
+  useFollowingList();
+  usePrevChatUsers();
+  useAllNotifications();
+  const { userData, loading, notificationData } = useSelector(
+    (state) => state.user,
+  );
+  const { socket } = useSelector((state) => state.socket);
   const dispatch = useDispatch();
 
   useEffect(() => {
-  if (!userData) {
-    return;
-  }
+    if (!userData) {
+      return;
+    }
 
-  const socketIo = io(import.meta.env.VITE_BASE_URL, {
-    query: {
-      userId: userData._id,
-    },
+    const socketIo = io(import.meta.env.VITE_BASE_URL, {
+      query: {
+        userId: userData._id,
+      },
+    });
+
+    dispatch(setSocket(socketIo));
+
+    socketIo.on("getOnlineUsers", (users) => {
+      dispatch(setOnlineUsers(users));
+    });
+
+    return () => {
+      socketIo.close();
+      dispatch(setSocket(null));
+    };
+  }, [userData, dispatch]);
+
+  socket?.on("newNotification", (noti) => {
+    dispatch(setNotificationData([...notificationData, noti]));
   });
-
-  dispatch(setSocket(socketIo));
-
-  socketIo.on("getOnlineUsers", (users)=>{
-    dispatch(setOnlineUsers(users))
-  })
-
-  return () => {
-    socketIo.close();
-    dispatch(setSocket(null));
-  };
-}, [userData, dispatch]);
 
   if (loading) {
     return (
@@ -111,7 +122,7 @@ const App = () => {
           element={userData ? <Upload /> : <Navigate to="/login" />}
         />
 
-         <Route
+        <Route
           path="/search"
           element={userData ? <Search /> : <Navigate to="/login" />}
         />
@@ -124,6 +135,11 @@ const App = () => {
         <Route
           path="/messagearea"
           element={userData ? <MessageArea /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/notifications"
+          element={userData ? <Notifications /> : <Navigate to="/login" />}
         />
 
         <Route
